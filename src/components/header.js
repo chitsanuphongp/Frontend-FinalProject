@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar, Container, Nav, Button, } from 'react-bootstrap'
-import { BsFillHouseFill, BsBasketFill, BsSearch, BsTelephoneFill } from "react-icons/bs";
+import { BsFillHouseFill, BsBasketFill, BsSearch } from "react-icons/bs";
 
 export default function Header() {
 
@@ -14,8 +14,7 @@ export default function Header() {
                             <Nav>
                             <Nav.Link href="/"><BsFillHouseFill style={{ margin:3 }}/> หน้าหลัก </Nav.Link>
                             <Nav.Link href="/lottery"><BsBasketFill style={{ margin:3 }}/> ซื้อลอตเตอรี่ </Nav.Link>
-                            <Nav.Link href="/check"><BsSearch style={{ margin:3 }}/> ตรวจรางวัล </Nav.Link>
-                            <Nav.Link href="/contact"><BsTelephoneFill style={{ margin:3 }}/> ติดต่อเรา </Nav.Link>
+                            <Nav.Link href="/checkprize"><BsSearch style={{ margin:3 }}/> ตรวจรางวัล </Nav.Link>
                             <Button className="m-2 me-0 mt-0" variant="dark" href="/login">ลงชื่อเข้าใช้</Button>
                             </Nav>  
                         </Container>
