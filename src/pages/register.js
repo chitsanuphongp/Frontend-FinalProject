@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Button } from 'react-bootstrap'
+import { useDispatch } from 'react-redux';
+
 
 const initialState = {
     username: '',
@@ -22,6 +24,7 @@ const passVerificationError = {
 export default function Register() {
 
     const navigate = useNavigate();
+    const Dispatch = useDispatch();
 
     const [newUser, setnewUser] = useState(initialState);
     const [passwordError, setPasswordError] = useState(passVerificationError);
@@ -46,7 +49,6 @@ export default function Register() {
         if(name === "conpass") {
             setPasswordError({ ...passwordError, conPass: newUser.pass === value });
         }
-        console.log("log error",passwordError)
     }
 
 
@@ -75,14 +77,46 @@ export default function Register() {
             )
         });
         const data = await res.json();
+        console.log(data);
 
-        if(data.status === 422 || !data){
+        if(res.status === 400 || !data){
             console.log("Invalid Registration")
-            window.alert("ลงทะเบียนไม่สำเร็จ")
+            if(res.message === "Alredy Have Username"){
+                window.alert("ชื่อผู้ใช้นี้มีผู้ใช้แล้ว")
+            }else{
+                window.alert("อีเมล์นี้มีผู้ใช้แล้ว")
+            }
         } else {
             console.log("Successful Registration")
             window.alert("ลงทะเบียนสำเร็จ")
-            navigate("/login");
+            // navigate("/login");
+            const { username, pass } = newUser;
+            const reqBody = {
+                user_username: username,
+                user_password: pass,
+            }
+
+            const res = await fetch("http://127.0.0.1:8080/api/auth/login", {
+                crossDomain: true,
+                method: "POST",
+                headers: {
+                "Content-Type" : "application/json"
+            },
+                body: JSON.stringify(
+                reqBody
+            )
+            });
+            const data = await res.json();
+            console.log(data);
+            localStorage.setItem('token', data.token)
+            Dispatch({
+                type:'LOGIN',
+                payload: {
+                    id: data.payload.id,
+                    user: data.data.username,
+                }
+            })
+            navigate('/lottery')
         }
     }
 
@@ -90,12 +124,12 @@ export default function Register() {
     return (
         <div>
             <div className="container-md d-flex justify-content-center">
-            <Card className="text-center container-sm" bg="dark" text="light" style={{ width: '60%', height: '60%', marginTop:'80px', marginBottom:'10px', borderRadius: '20px' }}>
+            <Card className="text-center container-sm" bg="dark" text="light" style={{ width: '80%', height: '60%', marginTop:'80px', marginBottom:'10px', borderRadius: '20px' }}>
             <Card.Body>
             <br />
             <Card.Title><h1>สมัครสมาชิก</h1></Card.Title>
             <br />
-            <Form>
+            <Form style={{ marginLeft: '10%', marginRight:'10%'}}>
             <Form.Group className="mb-3" controlId="formUserName">
                 <Form.Label className="d-flex justify-content-start">ชื่อผู้ใช้</Form.Label>
                 <Form.Control type="text" name="username" value={newUser.username} onChange={handleOnChange} placeholder="กรอกชื่อผู้ใช้" />

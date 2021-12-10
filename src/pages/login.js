@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Button } from 'react-bootstrap'
+import { useDispatch } from 'react-redux';
 
 const initialState = {
     user_username: '',
@@ -10,6 +11,7 @@ const initialState = {
 export default function Login() {
 
     const navigate = useNavigate();
+    const Dispatch = useDispatch();
 
     const [newLogin, setLogin] = useState(initialState);
 
@@ -39,11 +41,20 @@ export default function Login() {
             })
         });
         const data = await res.json();
+        console.log(data);
     
-        if(data.status === 422 || !data){
+        if(res.status === 400 || !data){
             console.log("Invalid Access")
             window.alert("เข้าสู่ระบบไม่สำเร็จ")
         } else {
+            localStorage.setItem('token', data.token)
+            Dispatch({
+                type:'LOGIN',
+                payload: {
+                    id: data.payload.id,
+                    user: data.data.username,
+                }
+            })
             console.log("Successful Access")
             window.alert("เข้าสู่ระบบสำเร็จ")
             navigate("/lottery");
@@ -52,12 +63,12 @@ export default function Login() {
 
     return (
         <div className="container-md d-flex justify-content-center">
-            <Card className="text-center container-md" bg="dark" text="light" style={{ width: '40%', height: '60%', marginTop:'80px', marginBottom:'10px', borderRadius: '20px' }}>
+            <Card className="text-center container-lg" bg="dark" text="light" style={{ width: '80%', height: '60%', marginTop:'80px', marginBottom:'10px', borderRadius: '20px' }}>
             <Card.Body>
             <br />
             <Card.Title><h1>เข้าสู่ระบบ</h1></Card.Title>
             <br />
-            <Form>
+            <Form style={{ marginLeft: '10%', marginRight:'10%'}}>
                 <Form.Group className="mb-3" controlId="formUser">
                     <Form.Label className="d-flex justify-content-start">ชื่อผู้ใช้</Form.Label>
                     <Form.Control type="text" name="user_username" value={newLogin.user_username} onChange={handleOnChange} placeholder="กรอกชื่อผู้ใช้" />
